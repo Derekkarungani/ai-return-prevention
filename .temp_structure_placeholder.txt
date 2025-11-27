@@ -1,0 +1,9 @@
+data/
+notebooks/
+src/
+src/model/
+src/api/
+src/generative/
+src/chatbot/
+app/
+requirements.txt
