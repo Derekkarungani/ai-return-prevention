@@ -10,8 +10,8 @@ app = FastAPI(title="Return Prevention API", version="1.0")
 
 # Load model & feature names once at startup
 model = xgb.XGBClassifier()
-model.load_model("src/model/return_predictor.json")
-feature_names = joblib.load("src/model/feature_names.pkl")
+model.load_model("../model/return_predictor.json")
+feature_names = joblib.load("../model/feature_names.pkl")
 
 class Item(BaseModel):
     sale_price: float
