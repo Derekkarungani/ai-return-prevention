@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Return Risk Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 10px;
+      line-height: 1.4;
+    }
+    h1 {
+      margin-bottom: 0.2rem;
+    }
+    small {
+      color: #555;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 6px;
+      margin-top: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 15px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <h1>AI Return Risk Predictor</h1>
+  <small>Powered by your XGBoost model + FastAPI backend</small>
+
+  <p>Enter item and customer details to estimate the probability that the item will be returned, plus an explanation and suggestions to reduce the risk.</p>
+
+  <label>Sale Price
+    <input type="number" id="sale_price" value="49.99" step="0.01">
+  </label>
+
+  <label>Cost
+    <input type="number" id="cost" value="20" step="0.01">
+  </label>
+
+  <label>Retail Price
+    <input type="number" id="retail_price" value="59.99" step="0.01">
+  </label>
+
+  <label>Delivery Time (days)
+    <input type="number" id="delivery_time_days" value="5" step="1">
+  </label>
+
+  <label>Category
+    <input type="text" id="category" value="Shoes">
+  </label>
+
+  <label>Department
+    <input type="text" id="department" value="Men">
+  </label>
+
+  <label>Brand
+    <input type="text" id="brand" value="Nike">
+  </label>
+
+  <label>Customer Age
+    <input type="number" id="age" value="30" step="1">
+  </label>
+
+  <label>Traffic Source
+    <input type="text" id="traffic_source" value="Search">
+  </label>
+
+  <button onclick="predict()">Predict Return Risk</button>
+
+  <div class="result" id="result">Fill in the details above and click "Predict Return Risk".</div>
+
+  <script>
+    async function predict() {
+      const payload = {
+        sale_price: parseFloat(document.getElementById('sale_price').value),
+        cost: parseFloat(document.getElementById('cost').value),
+        retail_price: parseFloat(document.getElementById('retail_price').value),
+        delivery_time_days: parseFloat(document.getElementById('delivery_time_days').value),
+        category: document.getElementById('category').value,
+        department: document.getElementById('department').value,
+        brand: document.getElementById('brand').value,
+        age: parseInt(document.getElementById('age').value),
+        traffic_source: document.getElementById('traffic_source').value
+      };
+
+      const resBox = document.getElementById('result');
+      resBox.textContent = "Predicting...";
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/predict_explained", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const txt = await response.text();
+          resBox.textContent = "Error from API:\n" + txt;
+          return;
+        }
+
+        const data = await response.json();
+        const prob = data.return_probability;
+        const pct = (prob * 100).toFixed(1);
+        const risk = data.risk_label || "UNKNOWN";
+
+        let text = `Return risk: ${pct}% (${risk})`;
+
+        if (data.reasons && data.reasons.length > 0) {
+          text += "\n\nReasons:\n";
+          data.reasons.forEach(r => {
+            text += `- ${r}\n`;
+          });
+        }
+
+        if (data.suggestions && data.suggestions.length > 0) {
+          text += "\nSuggestions:\n";
+          data.suggestions.forEach(s => {
+            text += `- ${s}\n`;
+          });
+        }
+
+        resBox.textContent = text;
+      } catch (err) {
+        resBox.textContent = "Request failed:\n" + err;
+      }
+    }
+  </script>
+</body>
+</html>
