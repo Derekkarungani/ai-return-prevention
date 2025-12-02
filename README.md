@@ -1,85 +1,115 @@
-# AI-Driven Return Prevention Platform for E-Commerce
-
-This project is my capstone for the MIT Emerging Talent Computer & Data Science Program.  
-It extends our group work on predicting e-commerce returns and turns it into a **working prototype platform** that:
-
-- Estimates the probability that an item will be **returned**  
-- Classifies risk as **LOW / MEDIUM / HIGH**  
-- Provides **simple explanations** of the risk  
-- Suggests **concrete actions** to help prevent returns
+# AI-Driven E-Commerce Return Prevention Platform  
+**MIT Emerging Talent – Capstone Project**  
+**Author:** Derek Karungani
 
 ---
 
-## 1. Problem & Motivation
+## 🔍 Overview
 
-Online retailers often face return rates of 15–30%, which:
+This project extends our earlier group work on predicting e-commerce product returns.  
+Instead of stopping at analysis in a notebook, this capstone builds a **working AI system** that:
 
-- Increases logistics, shipping, and restocking costs  
-- Hurts customer satisfaction and loyalty  
-- Wastes time and resources (and increases carbon footprint)
+- Trains a machine learning model to predict whether an item will be returned  
+- Serves predictions via a **FastAPI** backend  
+- Provides a simple user interface using **Streamlit**  
+- Demonstrates how AI can help reduce returns and improve customer satisfaction  
 
-From our earlier group project, we saw that returns are often driven by:
-
-- Vague or incomplete product descriptions  
-- Unclear sizing and fit (especially in apparel and shoes)  
-- Long or unexpected delivery times  
-- Impulse purchases from ads and social media traffic
-
-This capstone focuses on **turning those insights into a practical AI tool**.
+The main goal is to practice **end-to-end data science and ML deployment**:  
+from raw data → model → API → user-facing demo.
 
 ---
 
-## 2. What This Project Does
+## 🌐 Live Demo
 
-The system provides:
-
-1. **ML-based return risk prediction**
-
-   A trained **XGBoost classifier** takes in:
-
-   - Item + price info  
-   - Delivery time  
-   - Product category/brand  
-   - Customer age  
-   - Traffic source  
-
-   and outputs a **probability of return**.
-
-2. **Risk label + explanations**
-
-   Based on the probability and simple rules, it gives:
-
-   - A risk label: **LOW / MEDIUM / HIGH**  
-   - A list of human-readable **reasons**  
-   - A list of **suggestions** for preventing returns
-
-3. **Interactive interfaces**
-
-   - A **FastAPI backend** with a `/predict_explained` endpoint  
-   - A **simple HTML frontend** (`frontend/index.html`)  
-   - A **Streamlit app** (`app.py`) for a more polished demo
+👉 **Public Streamlit app:**  
+`https://ai-return-prevention-mjuuxfjhputbzv9hzfdyqr.streamlit.app/
 
 ---
 
-## 3. Project Structure
+## 🧠 Key Features
+
+- **Return Prediction Model**
+  - XGBoost binary classifier trained on order, product, and user data  
+  - Outputs a probability that an item will be returned  
+
+- **Simple Explainability**
+  - Uses feature values (price, delivery time, category, age, traffic source, etc.)  
+  - Produces human-readable reasons and suggestions for each prediction  
+
+- **API Backend (Local)**
+  - FastAPI application (in `backend/main.py`)  
+  - Endpoints for health check and prediction  
+  - Swagger UI available at `http://127.0.0.1:8000/docs` when running locally  
+
+- **Streamlit Frontend**
+  - Local app (`app.py`) for interacting with the local API  
+  - Cloud app (`app_cloud.py`) that talks directly to the model  
+  - Simple form to enter product + customer info and view the predicted return risk  
+
+---
+
+## 🛠 Tech Stack
+
+- **Language:** Python  
+- **ML / Data:**  
+  - pandas, numpy  
+  - scikit-learn  
+  - xgboost  
+  - joblib  
+
+- **Backend:**  
+  - FastAPI  
+  - Uvicorn  
+
+- **Frontend / UI:**  
+  - Streamlit  
+
+- **Other:**  
+  - Git & GitHub for version control  
+  - Virtual environment (`.venv`) for dependency isolation  
+
+---
+
+## 📂 Project Structure
 
 ```text
 ai-return-prevention/
+│
 ├── backend/
-│   ├── __init__.py
-│   └── main.py               # FastAPI app with /predict and /predict_explained
-├── data/
-│   ├── order_items.csv
-│   ├── products.csv
-│   └── users.csv
+│   └── main.py                # FastAPI application (local API)
+│
+├── frontend/                  # (placeholder for future UI work)
+│
 ├── src/
 │   └── model/
-│       ├── return_predictor.json    # Trained XGBoost model
-│       └── feature_names.pkl        # List of encoded feature names
+│       ├── return_predictor.json   # Trained XGBoost model
+│       └── feature_names.pkl       # Feature list used by the model
+│
+├── data/                      # CSV files (orders, order_items, products, users)
+│
 ├── notebooks/
-│   └── 01_baseline_model.ipynb      # Training and feature engineering
-├── frontend/
-│   └── index.html            # Simple JavaScript + HTML UI
-├── app.py                    # Streamlit app (dashboard-style UI)
-├── requirements.txt
-└── README.md
+│   └── 01_baseline_model.ipynb    # Model training and evaluation notebook
+│
+├── app.py                     # Local Streamlit app (talks to FastAPI)
+├── app_cloud.py               # Cloud Streamlit app (loads model directly)
+├── requirements.txt           # Python dependencies
+└── README.md                  # This file
+
+## Reflection & What I Learned
+
+This project was much more than building a prediction model — it was an end-to-end experience in data engineering, modeling, software development, and deployment. As someone new to data science and still learning Python, this project pushed me far outside my comfort zone and forced me to understand how real systems are built.
+
+I learned how to:
+- structure a multi-folder production-style repository  
+- clean, merge, and engineer features from large datasets  
+- handle imbalanced targets and interpret performance metrics  
+- build a machine-learning model using XGBoost  
+- expose the model through a FastAPI backend  
+- create a user-friendly Streamlit frontend  
+- package everything together into a working prototype  
+- manage virtual environments, requirements, and GitHub workflows  
+- debug issues across Python, VS Code, terminal, and libraries  
+
+One of my biggest challenges was working with memory-heavy datasets. I had to troubleshoot errors, sample data intelligently, reduce dimensionality, and iterate many times before I got a stable pipeline. Deploying the app locally and connecting all components taught me how real-world ML systems are designed.
+
+Most importantly, this project helped me build confidence. In the beginning, I struggled with Python basics and felt intimidated by technical assignments. Completing this end-to-end system — model, API, and UI — showed me I can solve complex problems step by step. The experience strengthened my technical skills, my patience, and my ability to break challenges into manageable tasks.
