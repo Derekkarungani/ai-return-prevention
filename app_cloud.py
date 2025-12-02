@@ -3,6 +3,7 @@ import pandas as pd
 import xgboost as xgb
 import joblib
 import os
+import numpy as np
 
 # ===============================
 # 1. Load model + feature names
@@ -139,7 +140,15 @@ if st.button("Predict Return Risk"):
 
     st.subheader(f"Return risk: **{pct:.1f}%** ({risk_label})")
 
-    st.progress(min(max(prob, 0.0), 1.0))
+    # Make sure prob is a plain float (not list/ndarray) before using it
+    if isinstance(prob, (list, tuple, np.ndarray)):
+        prob = float(prob[0])
+    else:
+        prob = float(prob)
+
+    safe_prob = float(min(max(prob, 0.0), 1.0))
+    st.progress(safe_prob)
+
 
     if reasons:
         st.markdown("### 🧠 Why this risk level?")
