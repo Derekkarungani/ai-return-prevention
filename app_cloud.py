@@ -1,23 +1,24 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import xgboost as xgb
 import joblib
+from pathlib import Path
 import os
-import numpy as np
+
 
 # ===============================
 # 1. Load model + feature names
 # ===============================
 
-MODEL_PATH = "src/model/return_predictor.json"
+MODEL_PATH = "src/model/return_predictor.pkl"
 FEATURE_PATH = "src/model/feature_names.pkl"
 
 if not os.path.exists(MODEL_PATH) or not os.path.exists(FEATURE_PATH):
     st.error("Model files not found. Please ensure src/model/return_predictor.json and feature_names.pkl exist.")
     st.stop()
 
-model = xgb.XGBClassifier()
-model.load_model(MODEL_PATH)
+model = joblib.load(MODEL_PATH)
 
 feature_names = joblib.load(FEATURE_PATH)
 
