@@ -9,61 +9,61 @@ import xgboost as xgb
 st.set_page_config(page_title="AI Return Prevention", layout="centered")
 
 # =========================================================
-# 1) PATHS (UPDATED TO YOUR REAL LOCATION)
-#    files are in: src/api/model/
+# PATHS (MATCH YOUR GITHUB STRUCTURE: src/model/)
 # =========================================================
 BASE_DIR = Path(__file__).resolve().parent
 
-MODEL_PATH = BASE_DIR / "src" / "api" / "model" / "return_predictor.json"
-FEATURE_PATH = BASE_DIR / "src" / "api" / "model" / "feature_names.pkl"
+MODEL_PATH = BASE_DIR / "src" / "model" / "return_predictor.json"
+FEATURE_PATH = BASE_DIR / "src" / "model" / "feature_names.pkl"
+
+st.title("AI-Driven Return Prevention Platform")
+st.caption("Demo: predicts return risk using a trained XGBoost model.")
 
 # =========================================================
-# 2) SIMPLE DEBUG (so reviewer can confirm)
+# DEBUG (helps confirm Streamlit can see the files)
 # =========================================================
 with st.expander("Debug info (for reviewer)", expanded=False):
     st.write("CWD:", os.getcwd())
     st.write("BASE_DIR:", str(BASE_DIR))
     st.write("MODEL_PATH:", str(MODEL_PATH))
     st.write("FEATURE_PATH:", str(FEATURE_PATH))
+    st.write("Root contents:", os.listdir(BASE_DIR))
+    st.write("src contents:", os.listdir(BASE_DIR / "src"))
+    st.write("src/model contents:", os.listdir(BASE_DIR / "src" / "model"))
     st.write("Model exists?", MODEL_PATH.exists())
     st.write("Features exists?", FEATURE_PATH.exists())
 
 # =========================================================
-# 3) CHECK FILES
+# CHECK FILES
 # =========================================================
 if not MODEL_PATH.exists() or not FEATURE_PATH.exists():
-    st.error("Model files not found. Please ensure the following exist in the repo:")
-    st.code("src/api/model/return_predictor.json\nsrc/api/model/feature_names.pkl")
+    st.error("Model files not found. Please ensure these exist:")
+    st.code("src/model/return_predictor.json\nsrc/model/feature_names.pkl")
     st.stop()
 
 # =========================================================
-# 4) LOAD MODEL + FEATURE NAMES
+# LOAD MODEL + FEATURE NAMES
 # =========================================================
 model = xgb.XGBClassifier()
-model.load_model(MODEL_PATH)
+model.load_model(str(MODEL_PATH))
 
 with open(FEATURE_PATH, "rb") as f:
     feature_names = pickle.load(f)
 
-st.title("AI-Driven Return Prevention Platform")
-st.caption("Demo: predicts return risk using a trained XGBoost model.")
-
 # =========================================================
-# 5) QUICK DEMO INPUT (safe defaults)
+# SIMPLE DEMO INPUT
 # =========================================================
 st.subheader("Try a sample prediction")
 
-# Minimal user inputs (you can expand later)
 sale_price = st.number_input("Sale price", min_value=0.0, value=50.0, step=1.0)
 retail_price = st.number_input("Retail price", min_value=0.0, value=70.0, step=1.0)
 delivery_time_days = st.number_input("Delivery time (days)", min_value=0, value=5, step=1)
 age = st.number_input("Customer age", min_value=0, value=30, step=1)
 
 if st.button("Predict return probability"):
-    # Build one-row input with ALL expected columns
     row = {col: 0 for col in feature_names}
 
-    # Fill numeric values if those columns exist in the trained feature set
+    # Fill numeric values only if those columns exist
     for k, v in {
         "sale_price": sale_price,
         "retail_price": retail_price,
